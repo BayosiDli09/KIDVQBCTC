@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vòng Quay Bầu Cua Tôm Cá</title>
+<style>
+:root{
+  --font-main: "Segoe UI", Roboto, "Noto Sans", Arial, sans-serif;
+  --card: rgba(255,255,255,.90);
+  --ink:#1a1a1a;
+  --shadow: 0 18px 46px rgba(0,0,0,.20);
+  --gold:#ffd166;
+}
+*{box-sizing:border-box;font-family:var(--font-main);}
+body{
+  margin:0;min-height:100vh;color:var(--ink);
+  overflow-x:hidden;
+  background:
+    radial-gradient(1200px 700px at 78% 10%, rgba(255,209,102,.45), transparent 60%),
+    radial-gradient(1000px 680px at 18% 25%, rgba(255,77,109,.32), transparent 55%),
+    radial-gradient(1000px 720px at 60% 92%, rgba(6,214,160,.28), transparent 62%),
+    linear-gradient(180deg, #7a0010 0%, #b10016 32%, #ff4d6d 58%, #ffd166 82%, #06d6a0 100%);
+}
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none;
+  background-image:
+    radial-gradient(circle at 20px 20px, rgba(255,255,255,.16) 2px, transparent 3px),
+    radial-gradient(circle at 70px 60px, rgba(255,255,255,.10) 2px, transparent 3px),
+    radial-gradient(circle at 120px 110px, rgba(255,255,255,.08) 1.6px, transparent 3px),
+    radial-gradient(circle at 40px 120px, rgba(255,209,102,.18) 2px, transparent 4px);
+  background-size: 170px 170px;
+  opacity:.65;
+  mix-blend-mode: screen;
+}
+
+/* Lanterns */
+.lantern{
+  position: fixed;
+  top: -10px;
+  width: 62px;
+  height: 86px;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,.55), transparent 45%),
+    linear-gradient(180deg, #ff3b3b, #a40016);
+  border-radius: 22px 22px 26px 26px;
+  box-shadow: 0 18px 30px rgba(0,0,0,.22);
+  border: 2px solid rgba(255,255,255,.22);
+  transform-origin: top center;
+  animation: sway 3.4s ease-in-out infinite;
+  z-index: 2;
+  pointer-events:none;
+}
+.lantern::before{
+  content:"";
+  position:absolute;
+  top:-18px; left: 50%;
+  width:2px; height: 18px;
+  background: rgba(255,255,255,.45);
+  transform: translateX(-50%);
+}
+.lantern::after{
+  content:"";
+  position:absolute;
+  bottom:-16px; left:50%;
+  width: 14px; height: 16px;
+  background: linear-gradient(180deg, var(--gold), #d8a63f);
+  border-radius: 0 0 10px 10px;
+  transform: translateX(-50%);
+  box-shadow: 0 6px 14px rgba(0,0,0,.18);
+}
+.lantern.l1{ left: 5vw; animation-duration: 3.2s; }
+.lantern.l2{ right: 5vw; animation-duration: 3.8s; }
+.lantern.l3{ left: 20vw; top: -24px; transform: scale(.85); animation-duration: 4.1s; opacity:.92; }
+.lantern.l4{ right: 20vw; top: -24px; transform: scale(.85); animation-duration: 4.4s; opacity:.92; }
+@keyframes sway{
+  0%,100%{ transform: rotate(-5deg); }
+  50%{ transform: rotate(6deg); }
+}
+
+/* Falling petals */
+.petal{
+  position: fixed;
+  top: -10vh;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle at 30% 30%, #fff6c2, #ffd166 55%, #d8a63f 100%);
+  border-radius: 2px 50% 50% 50%;
+  transform: rotate(25deg);
+  opacity: .95;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.16));
+  z-index: 1;
+  animation: fall linear infinite;
+  pointer-events:none;
+}
+@keyframes fall{
+  0%{ transform: translateY(-12vh) translateX(0) rotate(0deg); }
+  100%{ transform: translateY(112vh) translateX(var(--drift, 40px)) rotate(540deg); }
+}
+
+/* FX canvas */
+#fx{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* UI */
+header{text-align:center;color:#fff;padding:18px 14px 8px; position:relative; z-index:3}
+h1{margin:0;font-weight:900;font-size:clamp(24px,3.2vw,40px);text-shadow:0 8px 18px rgba(0,0,0,.25)}
+.subtitle{margin-top:8px;font-weight:700;opacity:.95;font-size:14px;line-height:1.35}
+
+.wrap{display:grid;place-items:center;padding:12px 14px 30px; position:relative; z-index:3}
+.stage{
+  width:95%;max-width:1100px;
+  display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start
+}
+@media (max-width:980px){ .stage{grid-template-columns:1fr;} }
+
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:var(--shadow);backdrop-filter: blur(6px)}
+.wheelCard{display:grid;place-items:center;gap:12px}
+
+/* Pointer */
+.pointer{
+  width:0;height:0;
+  border-left:16px solid transparent;
+  border-right:16px solid transparent;
+  border-bottom:32px solid #fff;
+  filter: drop-shadow(0 8px 10px rgba(0,0,0,.22));
+  margin-bottom:-10px;
+}
+#wheel{width:520px;max-width:90vw;border-radius:50%;box-shadow:0 12px 28px rgba(0,0,0,.22)}
+
+.controls{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center
+}
+button{
+  font-weight:900;border-radius:999px;padding:12px 20px;border:none;cursor:pointer;
+  transition:transform .08s ease,opacity .2s ease;
+}
+button:active{transform:translateY(1px) scale(.99)}
+button:disabled{opacity:.6;cursor:not-allowed}
+.btnSpin{background:linear-gradient(180deg,#fff,var(--gold));color:#2b1d00}
+.btnReset,.btnClear{
+  background:#fff;border:1px solid rgba(0,0,0,.1);color:#2b1d00;font-weight:900
+}
+.toggle{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.08);
+  font-weight:900;color:#2b1d00;user-select:none
+}
+.toggle input{transform:scale(1.1)}
+
+.statusRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.pill{
+  text-align:center;font-weight:900;background:#fff;border-radius:18px;padding:10px;border:1px solid rgba(0,0,0,.06)
+}
+.pill .label{font-size:12px;opacity:.75;text-transform:uppercase;font-weight:900}
+.pill .big{font-size:24px;font-weight:900;margin-top:2px}
+.bigResult{font-size:28px}
+
+h2{margin:0 0 10px 0;font-weight:900;color:#2b1d00}
+table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:14px}
+th,td{padding:10px;font-size:14px}
+th{background:var(--gold);font-weight:900}
+tr:nth-child(even) td{background:rgba(6,214,160,.08)}
+.badge{font-weight:900}
+footer{text-align:center;color:#fff;font-size:13px;font-weight:700;padding-bottom:16px; position:relative; z-index:3}
+
+/* Popup */
+#overlay{
+  position:fixed;inset:0;
+  background: rgba(0,0,0,.35);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+#overlay.show{ display:flex; }
+.popup{
+  width:min(420px, 90vw);
+  background: rgba(255,255,255,.96);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.28);
+  padding: 18px 16px 14px;
+  text-align:center;
+  border: 2px solid rgba(255,209,102,.55);
+  transform: scale(.88);
+  opacity: 0;
+  animation: popIn .32s ease forwards;
+}
+@keyframes popIn{ to{ transform: scale(1); opacity: 1; } }
+.popupTitle{ font-weight:900; color:#2b1d00; font-size:18px; margin-bottom: 10px; }
+.popupIcon{ font-size: 92px; line-height: 1; margin: 6px 0 6px; }
+.popupName{ font-weight:900; font-size: 30px; color:#1a1a1a; margin-bottom: 12px; }
+.popupBtns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.popupBtns button{ padding: 10px 16px; font-size: 15px; }
+.btnOk{ background: linear-gradient(180deg,#fff,var(--gold)); color:#2b1d00; }
+.btnAgain{ background:#fff; border: 1px solid rgba(0,0,0,.12); color:#2b1d00; }
+.popupHint{ margin-top:10px; font-size:12px; font-weight:700; opacity:.8; }
+</style>
+</head>
+<body>
+  <div class="lantern l1" aria-hidden="true"></div>
+  <div class="lantern l2" aria-hidden="true"></div>
+  <div class="lantern l3" aria-hidden="true"></div>
+  <div class="lantern l4" aria-hidden="true"></div>
+  <canvas id="fx"></canvas>
+
+<header>
+  <h1>🎡 Vòng Quay Bầu Cua Tôm Cá 🧧</h1>
+</header>
+
+<div class="wrap">
+  <div class="stage">
+
+    <div class="card wheelCard">
+      <canvas id="wheel" width="520" height="520"></canvas>
+
+      <div class="controls">
+        <button class="btnSpin" id="btnSpin">BẮT ĐẦU (10 GIÂY) ⏳</button>
+        <button class="btnReset" id="btnReset">LÀM LẠI</button>
+        <label class="toggle" title="Bật/Tắt âm thanh hiệu ứng">
+          <input type="checkbox" id="soundToggle" checked> ÂM THANH
+        </label>
+        <label class="toggle" title="Bật/Tắt nhạc nền nhẹ nhàng">
+          <input type="checkbox" id="musicToggle"> 🎶
+        </label>
+      </div>
+
+      <div class="statusRow">
+        <div class="pill"><div class="label">Đếm ngược</div><div class="big" id="countdown">—</div></div>
+        <div class="pill"><div class="label">Kết quả</div><div class="big bigResult" id="result">✨</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <h2>📋 Bảng kết quả (10 lượt)</h2>
+        <button class="btnClear" id="btnClear">XOÁ LỊCH SỬ</button>
+      </div>
+      <table aria-label="Bảng kết quả">
+        <thead><tr><th style="width:56px;text-align:center">#</th><th>Kết quả</th><th style="width:110px;text-align:center">Giờ</th></tr></thead>
+        <tbody id="history"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+<footer>©dangdev</footer>
+
+<div id="overlay" role="dialog" aria-modal="true" aria-label="Kết quả vòng quay">
+  <div class="popup">
+    <div class="popupTitle">🎉 KẾT QUẢ CỦA BẠN 🎉</div>
+    <div class="popupIcon" id="popupIcon">✨</div>
+    <div class="popupName" id="popupName">—</div>
+    <div class="popupBtns">
+      <button class="btnOk" id="btnOk">OK</button>
+      <button class="btnAgain" id="btnAgain">Quay Tiếp</button>
+    </div>
+    <div class="popupHint">Nhấn OK để dừng hoặc bấm quay tiếp</div>
+  </div>
+</div>
+
+<script>
+/* petals */
+(function makePetals(){
+  const COUNT = 24;
+  for(let i=0;i<COUNT;i++){
+    const p = document.createElement("div");
+    p.className = "petal";
+    const left = Math.random()*100;
+    const dur = 6 + Math.random()*6;
+    const delay = Math.random()*-dur;
+    const drift = (Math.random()*120 - 60).toFixed(0) + "px";
+    const size = 7 + Math.random()*9;
+    p.style.left = left + "vw";
+    p.style.animationDuration = dur + "s";
+    p.style.animationDelay = delay + "s";
+    p.style.setProperty("--drift", drift);
+    p.style.width = size + "px";
+    p.style.height = size + "px";
+    p.style.opacity = (0.55 + Math.random()*0.45).toFixed(2);
+    document.body.appendChild(p);
+  }
+})();
+
+/* data */
+const items=[
+  {name:"Bầu",icon:"🍐"},
+  {name:"Cua",icon:"🦀"},
+  {name:"Tôm",icon:"🦐"},
+  {name:"Cá", icon:"🐟"},
+  {name:"Nai",icon:"🦌"},
+  {name:"Gà", icon:"🐓"}
+];
+const colors=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93","#ff9f1c"];
+
+/* wheel */
+const wheel=document.getElementById("wheel");
+const ctx=wheel.getContext("2d");
+let angle=0;
+let spinning=false;
+
+/* history */
+let history=[];
+const MAX_HISTORY=10;
+const btnClear=document.getElementById("btnClear");
+function addHistory(item){
+  const time=new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
+  history.unshift({item,time});
+  if(history.length>MAX_HISTORY) history.pop();
+  renderHistory();
+}
+function renderHistory(){
+  const body=document.getElementById("history");
+  body.innerHTML="";
+  history.forEach((h,i)=>{
+    body.innerHTML += `<tr>
+      <td style="text-align:center;font-weight:900">${history.length-i}</td>
+      <td class="badge" style="font-weight:900">${h.item.icon} ${h.item.name}</td>
+      <td style="text-align:center;font-weight:900">${h.time}</td>
+    </tr>`;
+  });
+}
+btnClear.onclick=()=>{ if(spinning||timer) return; history=[]; renderHistory(); };
+
+/* draw (icons only) */
+function drawWheel(a){
+  const r=wheel.width/2;
+  ctx.clearRect(0,0,wheel.width,wheel.height);
+  ctx.save();
+  ctx.translate(r,r);
+  ctx.rotate(a);
+  const slice=Math.PI*2/items.length;
+
+  ctx.beginPath();
+  ctx.arc(0,0,r-4,0,Math.PI*2);
+  ctx.strokeStyle="rgba(255,255,255,.45)";
+  ctx.lineWidth=12;
+  ctx.stroke();
+
+  for(let i=0;i<items.length;i++){
+    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.fillStyle=colors[i%colors.length];
+    ctx.arc(0,0,r-10,i*slice,(i+1)*slice);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.strokeStyle="rgba(255,255,255,.78)";
+    ctx.lineWidth=4;
+    ctx.arc(0,0,r-12,i*slice,(i+1)*slice);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.rotate(i*slice + slice/2);
+    ctx.textAlign="center";
+    ctx.font="900 80px Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif";
+    ctx.fillStyle="rgba(0,0,0,.92)";
+    ctx.fillText(items[i].icon, r-118, 28);
+    ctx.restore();
+  }
+
+  ctx.beginPath(); ctx.fillStyle="rgba(255,255,255,.92)"; ctx.arc(0,0,64,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.fillStyle="#ffd166"; ctx.arc(0,0,42,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle="rgba(43,29,0,.92)";
+  ctx.font="900 16px 'Segoe UI', Roboto, 'Noto Sans', Arial, sans-serif";
+  ctx.textAlign="center";
+  ctx.fillText("BẦU CUA", 0, 6);
+
+  ctx.restore();
+}
+
+/* index under pointer */
+function normalizeDeg(d){ d=d%360; if(d<0) d+=360; return d; }
+function currentIndexFromAngle(angleRad){
+  const deg = normalizeDeg(360 - (angleRad * 180/Math.PI));
+  const slice = 360/items.length;
+  return Math.floor(deg / slice) % items.length;
+}
+
+/* sounds */
+const soundToggle=document.getElementById("soundToggle");
+const musicToggle=document.getElementById("musicToggle");
+let audioCtx=null;
+let musicNode=null, musicGain=null, musicTimer=null;
+
+function ensureAudio(){
+  if(!audioCtx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AC();
+  }
+  if(audioCtx.state === "suspended") audioCtx.resume();
+}
+function canSfx(){ return soundToggle.checked; }
+
+function playTick(){
+  if(!canSfx()) return;
+  ensureAudio();
+  const t = audioCtx.currentTime;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type="triangle";
+  o.frequency.setValueAtTime(950, t);
+  o.frequency.exponentialRampToValueAtTime(650, t+0.03);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.18, t+0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+0.06);
+  o.connect(g).connect(audioCtx.destination);
+  o.start(t); o.stop(t+0.07);
+}
+function playWin(){
+  if(!canSfx()) return;
+  ensureAudio();
+  const now = audioCtx.currentTime;
+  const freqs = [659.25, 783.99, 987.77, 1318.51];
+  freqs.forEach((f, i) => {
+    const t = now + i*0.06;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(f, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.16, t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.18);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(t); o.stop(t+0.2);
+  });
+}
+function playCountdownBeep(sec){
+  if(!canSfx()) return;
+  ensureAudio();
+  const t = audioCtx.currentTime;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type="square";
+  o.frequency.setValueAtTime(sec<=1?1200:900, t);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.12, t+0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+0.06);
+  o.connect(g).connect(audioCtx.destination);
+  o.start(t); o.stop(t+0.07);
+}
+function playStartWhoosh(){
+  if(!canSfx()) return;
+  ensureAudio();
+  const t = audioCtx.currentTime;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type="sawtooth";
+  o.frequency.setValueAtTime(300, t);
+  o.frequency.exponentialRampToValueAtTime(900, t+0.12);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.12, t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+0.18);
+  o.connect(g).connect(audioCtx.destination);
+  o.start(t); o.stop(t+0.2);
+}
+
+/* music */
+function stopMusic(){
+  if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
+  if(musicNode){ try{ musicNode.stop(); }catch(e){} musicNode=null; }
+  if(musicGain){ try{ musicGain.disconnect(); }catch(e){} musicGain=null; }
+}
+function startMusic(){
+  ensureAudio();
+  stopMusic();
+  musicGain = audioCtx.createGain();
+  musicGain.gain.value = 0.10;
+  musicGain.connect(audioCtx.destination);
+
+  // musicNode = audioCtx.createOscillator();
+  // musicNode.type = "sine";
+  // musicNode.frequency.value = 196; // G3
+  // musicNode.connect(musicGain);
+  // musicNode.start();
+
+  const notes = [392, 440, 523.25, 587.33, 659.25]; // G A C D E
+  musicTimer = setInterval(() => {
+    if(!musicToggle.checked) return;
+    const t = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(notes[Math.floor(Math.random()*notes.length)], t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.10, t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.18);
+    o.connect(g).connect(musicGain);
+    o.start(t); o.stop(t+0.22);
+  }, 450);
+}
+musicToggle.addEventListener("change", () => {
+  if(!musicToggle.checked) stopMusic();
+  else { try{ startMusic(); }catch(e){} }
+});
+
+/* confetti */
+const fx=document.getElementById("fx");
+const fxCtx=fx.getContext("2d");
+function resizeFx(){
+  fx.width = innerWidth * devicePixelRatio;
+  fx.height = innerHeight * devicePixelRatio;
+  fx.style.width = innerWidth + "px";
+  fx.style.height = innerHeight + "px";
+  fxCtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+addEventListener("resize", resizeFx);
+resizeFx();
+
+let confetti=[], running=false;
+function confettiBurst(){
+  const x=innerWidth/2, y=160;
+  const N=180;
+  const palette=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93","#ffffff","#ffd166"];
+  for(let i=0;i<N;i++){
+    confetti.push({
+      x,y,
+      vx:(Math.random()*10-5),
+      vy:(Math.random()*-11-4),
+      g:0.23+Math.random()*0.12,
+      w:3+Math.random()*4,
+      h:2+Math.random()*4,
+      a:1,
+      rot:Math.random()*Math.PI*2,
+      vr:(Math.random()*0.22-0.11),
+      c:palette[Math.floor(Math.random()*palette.length)]
+    });
+  }
+  if(!running) runFx();
+}
+function runFx(){
+  running=true;
+  fxCtx.clearRect(0,0,innerWidth,innerHeight);
+  confetti = confetti.filter(p=>p.a>0.03 && p.y<innerHeight+70);
+  for(const p of confetti){
+    p.vy += p.g; p.x += p.vx; p.y += p.vy;
+    p.rot += p.vr; p.a *= 0.985;
+    fxCtx.save();
+    fxCtx.globalAlpha=p.a;
+    fxCtx.translate(p.x,p.y);
+    fxCtx.rotate(p.rot);
+    fxCtx.fillStyle=p.c;
+    fxCtx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    fxCtx.restore();
+  }
+  if(confetti.length) requestAnimationFrame(runFx);
+  else { fxCtx.clearRect(0,0,innerWidth,innerHeight); running=false; }
+}
+
+/* countdown + spin */
+const btnSpin=document.getElementById("btnSpin");
+const btnReset=document.getElementById("btnReset");
+const countdownEl=document.getElementById("countdown");
+const resultEl=document.getElementById("result");
+let timer=null;
+
+btnSpin.onclick=()=>{
+  if(timer||spinning) return;
+  ensureAudio(); // unlock audio on gesture
+  if(musicToggle.checked) startMusic();
+
+  let sec=10;
+  countdownEl.textContent = sec + "s";
+  resultEl.textContent = "⏳";
+  btnSpin.disabled=true; btnReset.disabled=true; btnClear.disabled=true;
+
+  playCountdownBeep(sec);
+
+  timer=setInterval(()=>{
+    sec--;
+    countdownEl.textContent = (sec>0?sec:"0") + "s";
+    if(sec>0) playCountdownBeep(sec);
+    if(sec<=0){
+      clearInterval(timer); timer=null;
+      playStartWhoosh();
+      doSpin();
+    }
+  },1000);
+};
+
+btnReset.onclick=()=>{
+  if(spinning||timer) return;
+  angle=0; drawWheel(angle);
+  countdownEl.textContent="—";
+  resultEl.textContent="✨";
+};
+
+/* popup */
+const overlay=document.getElementById("overlay");
+const popupIcon=document.getElementById("popupIcon");
+const popupName=document.getElementById("popupName");
+document.getElementById("btnOk").onclick=()=>overlay.classList.remove("show");
+document.getElementById("btnAgain").onclick=()=>{ overlay.classList.remove("show"); if(!spinning && !timer) btnSpin.click(); };
+overlay.addEventListener("click",(e)=>{ if(e.target===overlay) overlay.classList.remove("show"); });
+document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && overlay.classList.contains("show")) overlay.classList.remove("show"); });
+
+function showPopup(item){
+  popupIcon.textContent=item.icon;
+  popupName.textContent=item.name;
+  overlay.classList.add("show");
+}
+
+/* spin */
+function doSpin(){
+  spinning=true;
+  const startAngle=angle;
+  const target=startAngle + Math.PI*10 + Math.random()*Math.PI*2;
+  const start=performance.now();
+  const duration=2700;
+
+  let lastIdx=currentIndexFromAngle(angle);
+  playTick();
+
+  function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
+  function anim(now){
+    const t=Math.min(1,(now-start)/duration);
+    const eased=easeOutCubic(t);
+    angle = startAngle + (target-startAngle)*eased;
+    drawWheel(angle);
+
+    const idx=currentIndexFromAngle(angle);
+    if(idx!==lastIdx){ lastIdx=idx; playTick(); }
+
+    if(t<1) requestAnimationFrame(anim);
+    else{
+      spinning=false;
+      const idxFinal=currentIndexFromAngle(angle);
+      const item=items[idxFinal];
+      resultEl.textContent = item.icon + " " + item.name;
+      addHistory(item);
+      confettiBurst();
+      playWin();
+      showPopup(item);
+
+      btnSpin.disabled=false; btnReset.disabled=false; btnClear.disabled=false;
+      countdownEl.textContent="—";
+    }
+  }
+  requestAnimationFrame(anim);
+}
+
+/* init */
+drawWheel(angle);
+</script>
+</body>
+</html>
