@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Vòng Quay Bầu Cua Tôm Cá</title>
+<title>Vòng Quay Bầu Cua Tôm Cá — Kids Tết ©devbayosi
+</title>
 <style>
 :root{
   --font-main: "Segoe UI", Roboto, "Noto Sans", Arial, sans-serif;
@@ -22,6 +23,7 @@ body{
     radial-gradient(1000px 720px at 60% 92%, rgba(6,214,160,.28), transparent 62%),
     linear-gradient(180deg, #7a0010 0%, #b10016 32%, #ff4d6d 58%, #ffd166 82%, #06d6a0 100%);
 }
+/* ánh vàng lấp lánh */
 body::before{
   content:"";
   position:fixed; inset:0;
@@ -36,7 +38,7 @@ body::before{
   mix-blend-mode: screen;
 }
 
-/* Lanterns */
+/* Đèn lồng */
 .lantern{
   position: fixed;
   top: -10px;
@@ -75,12 +77,9 @@ body::before{
 .lantern.l2{ right: 5vw; animation-duration: 3.8s; }
 .lantern.l3{ left: 20vw; top: -24px; transform: scale(.85); animation-duration: 4.1s; opacity:.92; }
 .lantern.l4{ right: 20vw; top: -24px; transform: scale(.85); animation-duration: 4.4s; opacity:.92; }
-@keyframes sway{
-  0%,100%{ transform: rotate(-5deg); }
-  50%{ transform: rotate(6deg); }
-}
+@keyframes sway{ 0%,100%{ transform: rotate(-5deg); } 50%{ transform: rotate(6deg); } }
 
-/* Falling petals */
+/* Hoa mai rơi */
 .petal{
   position: fixed;
   top: -10vh;
@@ -100,7 +99,7 @@ body::before{
   100%{ transform: translateY(112vh) translateX(var(--drift, 40px)) rotate(540deg); }
 }
 
-/* FX canvas */
+/* FX canvas confetti */
 #fx{
   position: fixed;
   inset: 0;
@@ -108,7 +107,7 @@ body::before{
   z-index: 5;
 }
 
-/* UI */
+/* ===== UI ===== */
 header{text-align:center;color:#fff;padding:18px 14px 8px; position:relative; z-index:3}
 h1{margin:0;font-weight:900;font-size:clamp(24px,3.2vw,40px);text-shadow:0 8px 18px rgba(0,0,0,.25)}
 .subtitle{margin-top:8px;font-weight:700;opacity:.95;font-size:14px;line-height:1.35}
@@ -138,12 +137,13 @@ h1{margin:0;font-weight:900;font-size:clamp(24px,3.2vw,40px);text-shadow:0 8px 1
   display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center
 }
 button{
-  font-weight:900;border-radius:999px;padding:12px 20px;border:none;cursor:pointer;
+  font-weight:900;border-radius:999px;padding:12px 18px;border:none;cursor:pointer;
   transition:transform .08s ease,opacity .2s ease;
 }
 button:active{transform:translateY(1px) scale(.99)}
 button:disabled{opacity:.6;cursor:not-allowed}
 .btnSpin{background:linear-gradient(180deg,#fff,var(--gold));color:#2b1d00}
+.btnFast{background:linear-gradient(180deg,#ff7a8f,#ff4d6d);color:#fff}
 .btnReset,.btnClear{
   background:#fff;border:1px solid rgba(0,0,0,.1);color:#2b1d00;font-weight:900
 }
@@ -170,7 +170,7 @@ tr:nth-child(even) td{background:rgba(6,214,160,.08)}
 .badge{font-weight:900}
 footer{text-align:center;color:#fff;font-size:13px;font-weight:700;padding-bottom:16px; position:relative; z-index:3}
 
-/* Popup */
+/* ===== POPUP RESULT ===== */
 #overlay{
   position:fixed;inset:0;
   background: rgba(0,0,0,.35);
@@ -204,6 +204,7 @@ footer{text-align:center;color:#fff;font-size:13px;font-weight:700;padding-botto
 </style>
 </head>
 <body>
+  <!-- Tết decorations -->
   <div class="lantern l1" aria-hidden="true"></div>
   <div class="lantern l2" aria-hidden="true"></div>
   <div class="lantern l3" aria-hidden="true"></div>
@@ -219,15 +220,15 @@ footer{text-align:center;color:#fff;font-size:13px;font-weight:700;padding-botto
 
     <div class="card wheelCard">
       <canvas id="wheel" width="520" height="520"></canvas>
-
       <div class="controls">
         <button class="btnSpin" id="btnSpin">BẮT ĐẦU (10 GIÂY) ⏳</button>
+        <button class="btnFast" id="btnFast"> QUAY NGAY</button>
         <button class="btnReset" id="btnReset">LÀM LẠI</button>
         <label class="toggle" title="Bật/Tắt âm thanh hiệu ứng">
           <input type="checkbox" id="soundToggle" checked> ÂM THANH
         </label>
         <label class="toggle" title="Bật/Tắt nhạc nền nhẹ nhàng">
-          <input type="checkbox" id="musicToggle"> 🎶
+          <input type="checkbox" id="musicToggle"> NHẠC NỀN
         </label>
       </div>
 
@@ -250,8 +251,11 @@ footer{text-align:center;color:#fff;font-size:13px;font-weight:700;padding-botto
 
   </div>
 </div>
-<footer>©dangdev</footer>
 
+<footer>Mini game Bầu Cua Tôm Cá – ©devbayosi09
+</footer>
+
+<!-- Popup overlay -->
 <div id="overlay" role="dialog" aria-modal="true" aria-label="Kết quả vòng quay">
   <div class="popup">
     <div class="popupTitle">🎉 KẾT QUẢ CỦA BẠN 🎉</div>
@@ -259,14 +263,14 @@ footer{text-align:center;color:#fff;font-size:13px;font-weight:700;padding-botto
     <div class="popupName" id="popupName">—</div>
     <div class="popupBtns">
       <button class="btnOk" id="btnOk">OK</button>
-      <button class="btnAgain" id="btnAgain">Quay Tiếp</button>
+      <button class="btnAgain" id="btnAgain">Tiếp tục</button>
     </div>
-    <div class="popupHint">Nhấn OK để dừng hoặc bấm quay tiếp</div>
+    <div class="popupHint">Nhấn OK hoặc bấm tiếp tục để quay</div>
   </div>
 </div>
 
 <script>
-/* petals */
+/* ===== Petals create ===== */
 (function makePetals(){
   const COUNT = 24;
   for(let i=0;i<COUNT;i++){
@@ -288,7 +292,7 @@ footer{text-align:center;color:#fff;font-size:13px;font-weight:700;padding-botto
   }
 })();
 
-/* data */
+/* ===== Data ===== */
 const items=[
   {name:"Bầu",icon:"🍐"},
   {name:"Cua",icon:"🦀"},
@@ -299,16 +303,16 @@ const items=[
 ];
 const colors=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93","#ff9f1c"];
 
-/* wheel */
+/* ===== Canvas wheel ===== */
 const wheel=document.getElementById("wheel");
 const ctx=wheel.getContext("2d");
 let angle=0;
 let spinning=false;
 
-/* history */
+/* ===== History (max 10) ===== */
 let history=[];
 const MAX_HISTORY=10;
-const btnClear=document.getElementById("btnClear");
+
 function addHistory(item){
   const time=new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
   history.unshift({item,time});
@@ -326,9 +330,11 @@ function renderHistory(){
     </tr>`;
   });
 }
+
+const btnClear = document.getElementById("btnClear");
 btnClear.onclick=()=>{ if(spinning||timer) return; history=[]; renderHistory(); };
 
-/* draw (icons only) */
+/* ===== Draw wheel (icons only & big) ===== */
 function drawWheel(a){
   const r=wheel.width/2;
   ctx.clearRect(0,0,wheel.width,wheel.height);
@@ -337,6 +343,7 @@ function drawWheel(a){
   ctx.rotate(a);
   const slice=Math.PI*2/items.length;
 
+  // outer ring
   ctx.beginPath();
   ctx.arc(0,0,r-4,0,Math.PI*2);
   ctx.strokeStyle="rgba(255,255,255,.45)";
@@ -344,7 +351,8 @@ function drawWheel(a){
   ctx.stroke();
 
   for(let i=0;i<items.length;i++){
-    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.beginPath();
+    ctx.moveTo(0,0);
     ctx.fillStyle=colors[i%colors.length];
     ctx.arc(0,0,r-10,i*slice,(i+1)*slice);
     ctx.fill();
@@ -355,6 +363,7 @@ function drawWheel(a){
     ctx.arc(0,0,r-12,i*slice,(i+1)*slice);
     ctx.stroke();
 
+    // icon only - big & near outer area so pointer points clearly
     ctx.save();
     ctx.rotate(i*slice + slice/2);
     ctx.textAlign="center";
@@ -364,6 +373,7 @@ function drawWheel(a){
     ctx.restore();
   }
 
+  // center cap
   ctx.beginPath(); ctx.fillStyle="rgba(255,255,255,.92)"; ctx.arc(0,0,64,0,Math.PI*2); ctx.fill();
   ctx.beginPath(); ctx.fillStyle="#ffd166"; ctx.arc(0,0,42,0,Math.PI*2); ctx.fill();
   ctx.fillStyle="rgba(43,29,0,.92)";
@@ -374,7 +384,7 @@ function drawWheel(a){
   ctx.restore();
 }
 
-/* index under pointer */
+/* ===== Pointer index ===== */
 function normalizeDeg(d){ d=d%360; if(d<0) d+=360; return d; }
 function currentIndexFromAngle(angleRad){
   const deg = normalizeDeg(360 - (angleRad * 180/Math.PI));
@@ -382,11 +392,13 @@ function currentIndexFromAngle(angleRad){
   return Math.floor(deg / slice) % items.length;
 }
 
-/* sounds */
-const soundToggle=document.getElementById("soundToggle");
-const musicToggle=document.getElementById("musicToggle");
-let audioCtx=null;
-let musicNode=null, musicGain=null, musicTimer=null;
+/* ===== Sounds (WebAudio) ===== */
+const soundToggle = document.getElementById("soundToggle");
+const musicToggle = document.getElementById("musicToggle");
+let audioCtx = null;
+let musicNode = null;
+let musicGain = null;
+let musicTimer = null;
 
 function ensureAudio(){
   if(!audioCtx){
@@ -460,25 +472,27 @@ function playStartWhoosh(){
   o.start(t); o.stop(t+0.2);
 }
 
-/* music */
+/* ===== Background music (simple pentatonic plucks) ===== */
 function stopMusic(){
-  if(musicTimer){ clearInterval(musicTimer); musicTimer=null; }
-  if(musicNode){ try{ musicNode.stop(); }catch(e){} musicNode=null; }
-  if(musicGain){ try{ musicGain.disconnect(); }catch(e){} musicGain=null; }
+  if(musicTimer){ clearInterval(musicTimer); musicTimer = null; }
+  if(musicNode){ try{ musicNode.stop(); }catch(e){} musicNode = null; }
+  if(musicGain){ try{ musicGain.disconnect(); }catch(e){} musicGain = null; }
 }
 function startMusic(){
   ensureAudio();
   stopMusic();
   musicGain = audioCtx.createGain();
-  musicGain.gain.value = 0.10;
+  musicGain.gain.value = 0.06;
   musicGain.connect(audioCtx.destination);
 
-  // musicNode = audioCtx.createOscillator();
-  // musicNode.type = "sine";
-  // musicNode.frequency.value = 196; // G3
-  // musicNode.connect(musicGain);
-  // musicNode.start();
+  // soft drone base
+  musicNode = audioCtx.createOscillator();
+  musicNode.type = "sine";
+  musicNode.frequency.value = 196; // G3
+  musicNode.connect(musicGain);
+  musicNode.start();
 
+  // little bell notes
   const notes = [392, 440, 523.25, 587.33, 659.25]; // G A C D E
   musicTimer = setInterval(() => {
     if(!musicToggle.checked) return;
@@ -499,9 +513,9 @@ musicToggle.addEventListener("change", () => {
   else { try{ startMusic(); }catch(e){} }
 });
 
-/* confetti */
-const fx=document.getElementById("fx");
-const fxCtx=fx.getContext("2d");
+/* ===== Confetti FX ===== */
+const fx = document.getElementById("fx");
+const fxCtx = fx.getContext("2d");
 function resizeFx(){
   fx.width = innerWidth * devicePixelRatio;
   fx.height = innerHeight * devicePixelRatio;
@@ -512,137 +526,182 @@ function resizeFx(){
 addEventListener("resize", resizeFx);
 resizeFx();
 
-let confetti=[], running=false;
+let confetti = [];
+let running = false;
 function confettiBurst(){
-  const x=innerWidth/2, y=160;
-  const N=180;
-  const palette=["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93","#ffffff","#ffd166"];
+  const x = innerWidth/2;
+  const y = 160;
+  const N = 180;
+  const palette = ["#ff595e","#ffca3a","#8ac926","#1982c4","#6a4c93","#ffffff", "#ffd166"];
   for(let i=0;i<N;i++){
     confetti.push({
-      x,y,
-      vx:(Math.random()*10-5),
-      vy:(Math.random()*-11-4),
-      g:0.23+Math.random()*0.12,
-      w:3+Math.random()*4,
-      h:2+Math.random()*4,
-      a:1,
-      rot:Math.random()*Math.PI*2,
-      vr:(Math.random()*0.22-0.11),
-      c:palette[Math.floor(Math.random()*palette.length)]
+      x, y,
+      vx: (Math.random()*10-5),
+      vy: (Math.random()*-11-4),
+      g: 0.23 + Math.random()*0.12,
+      w: 3 + Math.random()*4,
+      h: 2 + Math.random()*4,
+      a: 1,
+      rot: Math.random()*Math.PI*2,
+      vr: (Math.random()*0.22-0.11),
+      c: palette[Math.floor(Math.random()*palette.length)]
     });
   }
   if(!running) runFx();
 }
 function runFx(){
-  running=true;
-  fxCtx.clearRect(0,0,innerWidth,innerHeight);
-  confetti = confetti.filter(p=>p.a>0.03 && p.y<innerHeight+70);
+  running = true;
+  fxCtx.clearRect(0,0,innerWidth, innerHeight);
+  confetti = confetti.filter(p => p.a > 0.03 && p.y < innerHeight + 70);
+
   for(const p of confetti){
-    p.vy += p.g; p.x += p.vx; p.y += p.vy;
-    p.rot += p.vr; p.a *= 0.985;
+    p.vy += p.g;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.rot += p.vr;
+    p.a *= 0.985;
+
     fxCtx.save();
-    fxCtx.globalAlpha=p.a;
-    fxCtx.translate(p.x,p.y);
+    fxCtx.globalAlpha = p.a;
+    fxCtx.translate(p.x, p.y);
     fxCtx.rotate(p.rot);
-    fxCtx.fillStyle=p.c;
-    fxCtx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    fxCtx.fillStyle = p.c;
+    fxCtx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
     fxCtx.restore();
   }
-  if(confetti.length) requestAnimationFrame(runFx);
-  else { fxCtx.clearRect(0,0,innerWidth,innerHeight); running=false; }
+
+  if(confetti.length){
+    requestAnimationFrame(runFx);
+  }else{
+    fxCtx.clearRect(0,0,innerWidth, innerHeight);
+    running = false;
+  }
 }
 
-/* countdown + spin */
-const btnSpin=document.getElementById("btnSpin");
-const btnReset=document.getElementById("btnReset");
-const countdownEl=document.getElementById("countdown");
-const resultEl=document.getElementById("result");
-let timer=null;
+/* ===== UI elements ===== */
+const btnSpin = document.getElementById("btnSpin");
+const btnFast = document.getElementById("btnFast");
+const btnReset = document.getElementById("btnReset");
+const countdownEl = document.getElementById("countdown");
+const resultEl = document.getElementById("result");
 
-btnSpin.onclick=()=>{
-  if(timer||spinning) return;
-  ensureAudio(); // unlock audio on gesture
-  if(musicToggle.checked) startMusic();
+function setBusy(isBusy){
+  btnSpin.disabled = isBusy;
+  btnFast.disabled = isBusy;
+  btnReset.disabled = isBusy;
+  btnClear.disabled = isBusy;
+}
 
-  let sec=10;
-  countdownEl.textContent = sec + "s";
-  resultEl.textContent = "⏳";
-  btnSpin.disabled=true; btnReset.disabled=true; btnClear.disabled=true;
-
-  playCountdownBeep(sec);
-
-  timer=setInterval(()=>{
-    sec--;
-    countdownEl.textContent = (sec>0?sec:"0") + "s";
-    if(sec>0) playCountdownBeep(sec);
-    if(sec<=0){
-      clearInterval(timer); timer=null;
-      playStartWhoosh();
-      doSpin();
-    }
-  },1000);
+/* ===== Popup ===== */
+const overlay = document.getElementById("overlay");
+const popupIcon = document.getElementById("popupIcon");
+const popupName = document.getElementById("popupName");
+document.getElementById("btnOk").onclick = () => overlay.classList.remove("show");
+document.getElementById("btnAgain").onclick = () => {
+  overlay.classList.remove("show");
+  if(!spinning && !timer) btnFast.click(); // quay lại theo "quay ngay"
 };
-
-btnReset.onclick=()=>{
-  if(spinning||timer) return;
-  angle=0; drawWheel(angle);
-  countdownEl.textContent="—";
-  resultEl.textContent="✨";
-};
-
-/* popup */
-const overlay=document.getElementById("overlay");
-const popupIcon=document.getElementById("popupIcon");
-const popupName=document.getElementById("popupName");
-document.getElementById("btnOk").onclick=()=>overlay.classList.remove("show");
-document.getElementById("btnAgain").onclick=()=>{ overlay.classList.remove("show"); if(!spinning && !timer) btnSpin.click(); };
-overlay.addEventListener("click",(e)=>{ if(e.target===overlay) overlay.classList.remove("show"); });
-document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && overlay.classList.contains("show")) overlay.classList.remove("show"); });
-
+overlay.addEventListener("click", (e)=>{ if(e.target === overlay) overlay.classList.remove("show"); });
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape" && overlay.classList.contains("show")) overlay.classList.remove("show");
+});
 function showPopup(item){
-  popupIcon.textContent=item.icon;
-  popupName.textContent=item.name;
+  popupIcon.textContent = item.icon;
+  popupName.textContent = item.name;
   overlay.classList.add("show");
 }
 
-/* spin */
+/* ===== Spin core ===== */
 function doSpin(){
-  spinning=true;
-  const startAngle=angle;
-  const target=startAngle + Math.PI*10 + Math.random()*Math.PI*2;
-  const start=performance.now();
-  const duration=2700;
+  spinning = true;
 
-  let lastIdx=currentIndexFromAngle(angle);
+  const startAngle = angle;
+  const target = startAngle + Math.PI*10 + Math.random()*Math.PI*2;
+  const start = performance.now();
+  const duration = 2700;
+
+  let lastIdx = currentIndexFromAngle(angle);
   playTick();
 
   function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
+
   function anim(now){
-    const t=Math.min(1,(now-start)/duration);
-    const eased=easeOutCubic(t);
+    const t = Math.min(1, (now-start)/duration);
+    const eased = easeOutCubic(t);
     angle = startAngle + (target-startAngle)*eased;
     drawWheel(angle);
 
-    const idx=currentIndexFromAngle(angle);
-    if(idx!==lastIdx){ lastIdx=idx; playTick(); }
+    const idx = currentIndexFromAngle(angle);
+    if(idx !== lastIdx){
+      lastIdx = idx;
+      playTick();
+    }
 
-    if(t<1) requestAnimationFrame(anim);
-    else{
-      spinning=false;
-      const idxFinal=currentIndexFromAngle(angle);
-      const item=items[idxFinal];
+    if(t < 1){
+      requestAnimationFrame(anim);
+    }else{
+      spinning = false;
+      const idxFinal = currentIndexFromAngle(angle);
+      const item = items[idxFinal];
+
       resultEl.textContent = item.icon + " " + item.name;
       addHistory(item);
       confettiBurst();
       playWin();
       showPopup(item);
 
-      btnSpin.disabled=false; btnReset.disabled=false; btnClear.disabled=false;
-      countdownEl.textContent="—";
+      setBusy(false);
+      countdownEl.textContent = "—";
     }
   }
   requestAnimationFrame(anim);
 }
+
+/* ===== Countdown 10s ===== */
+let timer = null;
+btnSpin.onclick = ()=>{
+  if(timer || spinning) return;
+  ensureAudio(); // unlock audio on gesture
+  if(musicToggle.checked) startMusic();
+
+  let sec = 10;
+  countdownEl.textContent = sec + "s";
+  resultEl.textContent = "⏳";
+  setBusy(true);
+
+  playCountdownBeep(sec);
+  timer = setInterval(()=>{
+    sec--;
+    countdownEl.textContent = (sec>0?sec:"0") + "s";
+    if(sec>0) playCountdownBeep(sec);
+    if(sec<=0){
+      clearInterval(timer);
+      timer = null;
+      playStartWhoosh();
+      doSpin();
+    }
+  }, 1000);
+};
+
+/* ===== Spin now (no timer) ===== */
+btnFast.onclick = ()=>{
+  if(timer || spinning) return;
+  ensureAudio(); // unlock audio on gesture
+  if(musicToggle.checked) startMusic();
+  countdownEl.textContent = "—";
+  resultEl.textContent = "🎯";
+  setBusy(true);
+  playStartWhoosh();
+  doSpin();
+};
+
+btnReset.onclick = ()=>{
+  if(spinning || timer) return;
+  angle = 0;
+  drawWheel(angle);
+  countdownEl.textContent = "—";
+  resultEl.textContent = "✨";
+};
 
 /* init */
 drawWheel(angle);
